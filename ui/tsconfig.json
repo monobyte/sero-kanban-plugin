@@ -12,12 +12,7 @@
       "ES2023",
       "DOM",
       "DOM.Iterable"
-    ],
-    "paths": {
-      "@sero/common": [
-        "../node_modules/@sero-ai/common/src/index.ts"
-      ]
-    }
+    ]
   },
   "include": [
     "./**/*",
