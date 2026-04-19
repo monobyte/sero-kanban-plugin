@@ -1,4 +1,4 @@
-import type { ReviewMode } from '@sero-ai/common';
+import type { ReviewMode } from '../core/types';
 
 export interface ReviewPromptOptions {
   testingEnabled?: boolean;

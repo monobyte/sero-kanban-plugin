@@ -1,33 +1,173 @@
 /**
- * Shared Kanban plugin types.
+ * Shared Kanban plugin contracts.
  *
- * The host↔plugin board contract now lives in `@sero-ai/common`; this file keeps
- * plugin-local imports stable and adds the plugin-specific error-log types.
+ * Keep this module renderer-safe and framework-agnostic.
  */
 
-export type {
-  Column,
-  Priority,
-  CardStatus,
-  ReviewMode,
-  Subtask,
-  PlanningToolEntry,
-  PlanningProgress,
-  ImplementationProgress,
-  ReviewProgress,
-  Card,
-  KanbanSettings,
-  KanbanState,
-} from '@sero-ai/common';
+export type Column = 'backlog' | 'planning' | 'in-progress' | 'review' | 'done';
+export type Priority = 'critical' | 'high' | 'medium' | 'low';
+export type CardStatus = 'idle' | 'agent-working' | 'waiting-input' | 'paused' | 'failed';
+export type ReviewMode = 'full' | 'light';
 
-export {
-  COLUMNS,
-  COLUMN_LABELS,
-  PRIORITY_ORDER,
-  DEFAULT_KANBAN_STATE,
-  createDefaultKanbanState,
-  createCard,
-} from '@sero-ai/common';
+export interface Subtask {
+  id: string;
+  title: string;
+  description: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  dependsOn: string[];
+  /** TDD scenario designation: 'tdd' = write tests first, 'test-after' = tests after, 'no-test' = skip */
+  tddDesignation?: 'tdd' | 'test-after' | 'no-test';
+  /** File paths this subtask creates or modifies */
+  filePaths?: string[];
+  /** Estimated complexity: low (~15min), medium (~30min), high (~45min+) */
+  complexity?: 'low' | 'medium' | 'high';
+  /** Spec review status (per-subtask review mode) */
+  specReviewStatus?: 'pending' | 'passed' | 'failed';
+  /** Quality review status (per-subtask review mode) */
+  qualityReviewStatus?: 'pending' | 'passed' | 'failed';
+  agentRunId?: string;
+  checkpointId?: string;
+}
+
+export interface PlanningToolEntry {
+  tool: string;
+  args: string;
+  running: boolean;
+}
+
+export interface PlanningProgress {
+  phase: string;
+  startedAt: number;
+  agents: { name: string; status: 'running' | 'completed' | 'failed' }[];
+  recentTools: PlanningToolEntry[];
+  log: string[];
+  liveOutput?: string;
+  liveOutputSource?: string;
+}
+
+export interface ImplementationProgress {
+  phase: string;
+  startedAt: number;
+  currentWave: number;
+  totalWaves: number;
+  agents: { name: string; status: 'running' | 'completed' | 'failed' }[];
+  recentTools: PlanningToolEntry[];
+  log: string[];
+  liveOutput?: string;
+  liveOutputSource?: string;
+}
+
+export interface ReviewProgress {
+  phase: string;
+  startedAt: number;
+  agents: { name: string; status: 'running' | 'completed' | 'failed' }[];
+  recentTools: PlanningToolEntry[];
+  log: string[];
+  liveOutput?: string;
+  liveOutputSource?: string;
+}
+
+export interface Card {
+  id: string;
+  title: string;
+  description: string;
+  acceptance: string[];
+  priority: Priority;
+  column: Column;
+  status: CardStatus;
+  /** IDs of cards that must be in 'done' before this card can start */
+  blockedBy?: string[];
+  branch?: string;
+  worktreePath?: string;
+  sessionId?: string;
+  subtasks: Subtask[];
+  plan?: string;
+  prUrl?: string;
+  prNumber?: number;
+  previewUrl?: string;
+  previewServerId?: string;
+  reviewFilePath?: string;
+  lastCheckpoint?: string;
+  planningProgress?: PlanningProgress;
+  implementationProgress?: ImplementationProgress;
+  reviewProgress?: ReviewProgress;
+  error?: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+}
+
+export interface KanbanSettings {
+  autoAdvance: boolean;
+  /** Review style: full diff review, or light smoke review for prototype work */
+  reviewMode: ReviewMode;
+  /** Whether TDD and testing are enabled (default: true). false = POC mode */
+  testingEnabled: boolean;
+  /** YOLO mode: auto-start, auto-approve, auto-complete — no human gates */
+  yoloMode: boolean;
+  /** When YOLO mode is enabled, automatically request GitHub PR auto-merge. */
+  yoloAutoMergePrs: boolean;
+}
+
+export interface KanbanState {
+  cards: Card[];
+  nextId: number;
+  settings: KanbanSettings;
+}
+
+export const COLUMNS: Column[] = ['backlog', 'planning', 'in-progress', 'review', 'done'];
+
+export const COLUMN_LABELS: Record<Column, string> = {
+  backlog: 'Backlog',
+  planning: 'Planning',
+  'in-progress': 'In Progress',
+  review: 'Review',
+  done: 'Done',
+};
+
+export const PRIORITY_ORDER: Record<Priority, number> = {
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
+export function createDefaultKanbanState(): KanbanState {
+  return {
+    cards: [],
+    nextId: 1,
+    settings: {
+      autoAdvance: true,
+      reviewMode: 'full',
+      testingEnabled: true,
+      yoloMode: false,
+      yoloAutoMergePrs: false,
+    },
+  };
+}
+
+export const DEFAULT_KANBAN_STATE: KanbanState = createDefaultKanbanState();
+
+export function createCard(
+  id: string,
+  title: string,
+  opts?: Partial<Pick<Card, 'description' | 'priority' | 'acceptance' | 'blockedBy'>>,
+): Card {
+  const now = new Date().toISOString();
+  return {
+    id,
+    title,
+    description: opts?.description ?? '',
+    acceptance: opts?.acceptance ?? [],
+    priority: opts?.priority ?? 'medium',
+    column: 'backlog',
+    status: 'idle',
+    blockedBy: opts?.blockedBy ?? [],
+    subtasks: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+}
 
 // ── Error reporting ─────────────────────────────────────────
 

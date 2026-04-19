@@ -1,4 +1,4 @@
-import type { Card } from '@sero-ai/common';
+import type { Card } from '../core/types';
 
 const VALID_TDD = new Set(['tdd', 'test-after', 'no-test']);
 const VALID_COMPLEXITY = new Set(['low', 'medium', 'high']);

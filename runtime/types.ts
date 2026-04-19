@@ -7,8 +7,8 @@ import type {
   AppRuntimeDevServer,
   AppRuntimeStartManagedDevServerResult,
   AppRuntimeWorkspaceRuntimeResolution,
-  KanbanState,
 } from '@sero-ai/common';
+import type { KanbanState } from '../shared/types';
 
 export type {
   AppRuntime,

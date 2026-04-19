@@ -1,10 +1,11 @@
 import {
-  getUnmetDependencies as getSharedUnmetDependencies,
+  getUnmetDependencies,
   validateCardTransition,
   type ValidationResult,
-} from '@sero-ai/common';
+} from '../../shared/validation';
 import type { Card, Column, KanbanState } from './types';
 
+export { getUnmetDependencies };
 export type { ValidationResult };
 
 export const validateTransition: (
@@ -12,11 +13,6 @@ export const validateTransition: (
   targetColumn: Column,
   state?: KanbanState,
 ) => ValidationResult = validateCardTransition;
-
-export const getUnmetDependencies: (
-  card: Card,
-  state?: KanbanState,
-) => string[] = getSharedUnmetDependencies;
 
 export interface StageContract {
   transition: `${Column}->${Column}`;

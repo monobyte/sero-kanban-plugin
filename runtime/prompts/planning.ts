@@ -1,4 +1,4 @@
-import type { Card } from '@sero-ai/common';
+import type { Card } from '../core/types';
 
 export function buildPlanningPrompt(card: Card): string {
   let prompt = `# Task: ${card.title}\n\n`;
