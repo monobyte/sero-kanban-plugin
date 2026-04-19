@@ -1,0 +1,101 @@
+{
+  "name": "@sero-ai/plugin-kanban",
+  "version": "0.2.0",
+  "description": "Kanban dev board for Sero - AI-driven development workflow",
+  "keywords": [
+    "pi-package"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run --root .",
+    "test:watch": "vitest --root .",
+    "typecheck": "tsc --noEmit -p ui/tsconfig.json && tsc --noEmit -p extension/tsconfig.json && tsc --noEmit -p runtime/tsconfig.json"
+  },
+  "pi": {
+    "extensions": [
+      "./extension/index.ts"
+    ],
+    "prompts": [
+      "./prompts/brainstorm.md",
+      "./prompts/card-enhance.md"
+    ]
+  },
+  "sero": {
+    "app": {
+      "id": "kanban",
+      "name": "Kanban",
+      "icon": "columns-3",
+      "stateFile": ".sero/apps/kanban/state.json",
+      "ui": "./dist/ui/remoteEntry.js",
+      "component": "KanbanApp",
+      "runtime": "./runtime/index.ts",
+      "devPort": 5189,
+      "widgets": [
+        {
+          "id": "board-overview",
+          "name": "Board Overview",
+          "component": "KanbanWidget",
+          "description": "Card counts by column with priority distribution",
+          "defaultSize": {
+            "w": 2,
+            "h": 2
+          },
+          "minSize": {
+            "w": 2,
+            "h": 2
+          },
+          "maxSize": {
+            "w": 4,
+            "h": 3
+          }
+        }
+      ]
+    },
+    "plugin": {
+      "category": "productivity",
+      "tags": [
+        "kanban",
+        "planning",
+        "workflow"
+      ],
+      "minSeroVersion": "0.1.0",
+      "requiredHostCapabilities": [
+        "appAgent.invokeTool",
+        "tool.cli",
+        "appRuntime.background"
+      ],
+      "preBuilt": false,
+      "bridgeTools": [
+        "kanban"
+      ]
+    }
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.48"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-ai": ">=0.61.1",
+    "@mariozechner/pi-coding-agent": ">=0.61.1",
+    "@mariozechner/pi-tui": ">=0.61.1",
+    "zod": ">=4.0.0"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "^1.11.0",
+    "@sero-ai/app-runtime": "file:./vendor/sero-ai-app-runtime",
+    "@sero/common": "file:./vendor/sero-common",
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/node": "^22.19.11",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^27.0.0",
+    "motion": "^12.34.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1",
+    "vitest": "^4.0.18"
+  }
+}
