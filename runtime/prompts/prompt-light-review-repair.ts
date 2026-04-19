@@ -1,4 +1,4 @@
-import type { Card, ReviewMode } from '@sero-ai/common';
+import type { Card, ReviewMode } from '../core/types';
 
 interface LightReviewRepairPromptOptions {
   reviewMode?: ReviewMode;

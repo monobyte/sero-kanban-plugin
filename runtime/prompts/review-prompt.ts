@@ -1,4 +1,4 @@
-import type { Card } from '@sero-ai/common';
+import type { Card } from '../core/types';
 import type {
   ReviewIssue,
   ReviewPromptOptions,
