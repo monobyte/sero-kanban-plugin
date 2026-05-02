@@ -18,6 +18,7 @@ import {
   reconcilePersistedState,
   runWorkspaceMaintenance,
 } from './orchestrator-helpers';
+import { createWorktreeWithRecovery } from './worktree-recovery';
 import {
   getAllReadyBacklogCards,
   getNewlyUnblockedCards,
@@ -122,10 +123,10 @@ export async function runPlanningPhase(
   try {
     await updateCard(context.deps.host.appState, workspace.stateFilePath, card.id, { status: 'agent-working' });
 
-    const { worktreePath, branchName, greenfield } = await context.deps.host.git.createWorktree(
+    const { worktreePath, branchName, greenfield } = await createWorktreeWithRecovery(
+      context.deps.host,
       workspacePath,
-      card.id,
-      card.title,
+      card,
     );
     await updateCard(context.deps.host.appState, workspace.stateFilePath, card.id, {
       branch: branchName,
