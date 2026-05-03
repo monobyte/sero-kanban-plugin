@@ -2,20 +2,77 @@ import type { PlanningToolEntry } from '../../shared/types';
 import { formatActivityLogLine } from './activity-panel-log';
 import type { ActivityPanelTheme } from './ActivityPanel';
 
-function toolIcon(name: string): string {
-  return TOOL_ICONS[name] ?? '🔧';
+type ToolIconName = 'file' | 'terminal' | 'pencil' | 'folder' | 'search' | 'wrench';
+
+const TOOL_ICONS: Record<string, ToolIconName> = {
+  read: 'file',
+  bash: 'terminal',
+  write: 'pencil',
+  edit: 'pencil',
+  ls: 'folder',
+  find: 'search',
+  grep: 'search',
+  glob: 'search',
+};
+
+function resolveToolIcon(name: string): ToolIconName {
+  return TOOL_ICONS[name] ?? 'wrench';
 }
 
-const TOOL_ICONS: Record<string, string> = {
-  read: '📖',
-  bash: '📂',
-  write: '✏️',
-  edit: '✏️',
-  ls: '📁',
-  find: '🔍',
-  grep: '🔎',
-  glob: '🔍',
-};
+function ToolIcon({ name }: { name: string }) {
+  const icon = resolveToolIcon(name);
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ width: '12px', height: '12px', display: 'block' }}
+      aria-hidden="true"
+    >
+      {icon === 'file' && (
+        <>
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+          <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+          <path d="M10 9H8" />
+          <path d="M16 13H8" />
+          <path d="M16 17H8" />
+        </>
+      )}
+      {icon === 'terminal' && (
+        <>
+          <path d="m7 11 3-3-3-3" />
+          <path d="M11 13h4" />
+          <rect width="18" height="14" x="3" y="5" rx="2" />
+        </>
+      )}
+      {icon === 'pencil' && (
+        <>
+          <path d="M21.17 6.83a2.83 2.83 0 0 0-4-4L3 17v4h4Z" />
+          <path d="m15 5 4 4" />
+        </>
+      )}
+      {icon === 'folder' && (
+        <>
+          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+        </>
+      )}
+      {icon === 'search' && (
+        <>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </>
+      )}
+      {icon === 'wrench' && (
+        <>
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a6 6 0 0 1-7.9 7.9l-6 6a2.1 2.1 0 0 1-3-3l6-6a6 6 0 0 1 7.9-7.9Z" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export function ToolFeed({
   feedRef,
@@ -51,15 +108,17 @@ export function ToolFeed({
           <span
             style={{
               display: 'inline-block',
-              width: '5px',
-              height: '5px',
+              width: '6px',
+              height: '6px',
               borderRadius: '50%',
               backgroundColor: entry.running ? activeColor : '#34d399',
               animation: entry.running ? 'kb-pulse 1.5s ease-in-out infinite' : undefined,
               flexShrink: 0,
             }}
           />
-          <span style={{ fontSize: '10px', flexShrink: 0 }}>{toolIcon(entry.tool)}</span>
+          <span style={{ color: '#a1a1aa', flexShrink: 0 }}>
+            <ToolIcon name={entry.tool} />
+          </span>
           <span style={{ fontSize: '10px', fontWeight: 500, color: '#5c5e6a', flexShrink: 0 }}>
             {entry.tool}
           </span>
